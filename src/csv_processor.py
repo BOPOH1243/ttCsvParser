@@ -63,13 +63,15 @@ class CSVProcessor:
                     filtered_data.append(row)
             except KeyError:
                 continue
+            except TypeError:
+                raise TypeError("условие фильтрации некорректно")
         return filtered_data
 
     def _parse_condition(self, condition: str) -> tuple[str, str, str]:
         """Парсит условие фильтрации.
 
         Args:
-            condition (str): Условие в формате "column=value".
+            condition (str): Условие в формате "column=value"/"column<value".
 
         Returns:
             tuple[str, str, str]: Колонка, оператор, значение.
@@ -79,7 +81,7 @@ class CSVProcessor:
             if op in condition:
                 column, value = condition.split(op, 1)
                 return column.strip(), op, value.strip()
-        raise ValueError(f"Invalid condition: {condition}")
+        raise ValueError(f"неправильный оператор: {condition}")
 
     def aggregate_data(
         self, data: List[Dict[str, Any]], aggregation: str, column: str
